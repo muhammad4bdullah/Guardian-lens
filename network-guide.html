@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network Audit - GuardianLens</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #020617; color: #f8fafc; }
+        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
         .terminal-box { 
             background: rgba(16, 185, 129, 0.05); 
             border: 1px solid rgba(16, 185, 129, 0.2);
@@ -14,61 +15,97 @@
         }
         .pulse-emerald { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body class="p-6">
 
     <div class="max-w-md mx-auto">
-        <a href="index.html" class="text-emerald-400 mb-6 inline-block font-mono">← RETURN_TO_HUB</a>
+        <a href="index.html" class="text-emerald-400 mb-6 inline-block font-mono hover:text-emerald-300 transition-colors">← RETURN_TO_HUB</a>
         
         <div class="mb-8">
             <h1 class="text-3xl font-black text-emerald-500 tracking-tighter">NETWORK_AUDIT</h1>
-            <div class="h-1 w-20 bg-emerald-500 mt-2"></div>
+            <div class="flex items-center gap-2 mt-2">
+                <div class="h-1 w-20 bg-emerald-500"></div>
+                <span class="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Version 2.0.4</span>
+            </div>
         </div>
 
-        <div class="terminal-box p-4 rounded-lg mb-6 relative overflow-hidden">
+        <div class="glass-card p-5 rounded-xl border-l-4 border-amber-500 mb-8">
+            <div class="flex items-start gap-3">
+                <i class="fas fa-triangle-exclamation text-amber-500 mt-1"></i>
+                <div>
+                    <h4 class="text-sm font-bold text-amber-100">HARDWARE ACCESS RESTRICTED</h4>
+                    <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                        Web browsers block deep-packet inspection for security. To detect hidden CCTV hardware, you must use our dedicated Windows Framework.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-3 mb-10">
+            <h3 class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-1">Required Software (PC ONLY)</h3>
+            
+            <a href="https://npcap.com/dist/npcap-1.80.exe" class="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg hover:border-emerald-500 transition-all group">
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-layer-group text-slate-500 group-hover:text-emerald-500"></i>
+                    <div>
+                        <p class="text-sm font-bold">1. Npcap Framework</p>
+                        <p class="text-[10px] text-slate-500 uppercase">System Driver</p>
+                    </div>
+                </div>
+                <i class="fas fa-download text-xs text-slate-600"></i>
+            </a>
+
+            <a href="#" class="flex items-center justify-between p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/20 transition-all group">
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-shield-halved text-emerald-500"></i>
+                    <div>
+                        <p class="text-sm font-bold text-emerald-400">2. GuardianLens 2.0</p>
+                        <p class="text-[10px] text-emerald-600 uppercase">Main Security Tool (.EXE)</p>
+                    </div>
+                </div>
+                <i class="fas fa-arrow-down text-xs text-emerald-500"></i>
+            </a>
+        </div>
+
+        <div class="terminal-box p-4 rounded-lg mb-6">
             <div class="flex items-center space-x-2 mb-3">
                 <div class="w-2 h-2 rounded-full bg-emerald-500 pulse-emerald"></div>
-                <span class="text-xs text-emerald-400 uppercase tracking-widest">Signal Intercept Active</span>
+                <span class="text-[10px] text-emerald-400 uppercase tracking-widest font-bold">System Environment: Windows Detected</span>
             </div>
-            <p class="text-[10px] text-emerald-700 leading-tight">
-                SCANNING_PORT: 80, 554, 1935, 8080...<br>
-                CHECKING_MAC_VENDORS...<br>
-                HANDSHAKE_PROTOCOL_INITIATED...
+            <p class="text-[10px] text-emerald-700/60 leading-tight font-mono">
+                [SYSTEM]: Awaiting local executable handshake...<br>
+                [DRIVER]: Verify Npcap L2 Socket connectivity...<br>
+                [STATUS]: WEB_UI_SANDBOXED - Download Client to proceed.
             </p>
         </div>
 
-        <h3 class="text-sm font-bold text-white mb-4 uppercase tracking-widest border-b border-slate-800 pb-2">Step-by-Step Protocol</h3>
-
-        <div class="space-y-6">
+        <div class="space-y-4">
             <div class="flex gap-4">
-                <span class="text-emerald-500 font-bold">01</span>
+                <span class="text-slate-700 font-bold">01</span>
                 <div>
-                    <p class="text-sm font-bold">Access Gateway</p>
-                    <p class="text-xs text-slate-400">Connect to the local Wi-Fi. Most spy cams require a 2.4GHz or 5GHz connection to stream data.</p>
+                    <p class="text-xs font-bold text-slate-300">Run Npcap Setup</p>
+                    <p class="text-[10px] text-slate-500 italic">Enable "WinPcap Compatibility Mode" during install.</p>
                 </div>
             </div>
-
             <div class="flex gap-4">
-                <span class="text-emerald-500 font-bold">02</span>
+                <span class="text-slate-700 font-bold">02</span>
                 <div>
-                    <p class="text-sm font-bold">Identify Suspicious Nodes</p>
-                    <p class="text-xs text-slate-400">Open your phone's Wi-Fi settings. Look for weird names like <code class="bg-slate-800 px-1 text-emerald-300">IPC-XXXX</code>, <code class="bg-slate-800 px-1 text-emerald-300">CAM-612</code>, or just long strings of random numbers.</p>
-                </div>
-            </div>
-
-            <div class="flex gap-4">
-                <span class="text-emerald-500 font-bold">03</span>
-                <div>
-                    <p class="text-sm font-bold">Hardware Correlation</p>
-                    <p class="text-xs text-slate-400">If you see a strong Wi-Fi signal named "Cam" but can't see a camera, it's likely hidden inside an appliance (clock, USB charger, etc.).</p>
+                    <p class="text-xs font-bold text-slate-300">Launch GuardianLens</p>
+                    <p class="text-[10px] text-slate-500 italic">Right-click the .exe and select 'Run as Administrator'.</p>
                 </div>
             </div>
         </div>
 
-        <div class="mt-10 p-4 border border-dashed border-slate-700 rounded-lg text-center">
-            <p class="text-[10px] text-slate-500 uppercase">Expert Tip</p>
-            <p class="text-xs text-slate-300 mt-1">Download "Fing" from the App Store for a deep network scan that a web app can't perform.</p>
+        <div class="mt-10 pt-6 border-t border-slate-900 text-center">
+            <span class="bg-slate-900 text-slate-500 text-[9px] px-3 py-1 rounded-full uppercase tracking-tighter">
+                <i class="fab fa-windows mr-1"></i> Desktop Architecture Required
+            </span>
         </div>
     </div>
 
