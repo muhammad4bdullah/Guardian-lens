@@ -7,35 +7,51 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        body { background: #020617; color: #f8fafc; font-family: monospace; }
         .video-wrapper { position: relative; width: 100%; max-width: 640px; margin: auto; }
         canvas { position: absolute; top: 0; left: 0; z-index: 10; width: 100%; height: 100%; }
-        video { width: 100%; border-radius: 12px; background: #1e293b; }
-        .loading-overlay { 
-            position: absolute; inset: 0; background: rgba(15, 23, 42, 0.9); 
+        video { width: 100%; border-radius: 12px; background: #0f172a; border: 1px solid #1e293b; }
+        .loader-ui { 
+            position: absolute; inset: 0; background: #020617; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-white p-4">
+<body class="p-6">
 
     <div class="max-w-md mx-auto">
-        <a href="index.html" class="text-cyan-400 mb-4 inline-block">← Back to Hub</a>
-        <h1 class="text-2xl font-bold mb-1">AI Object Scanner</h1>
-        <p class="text-slate-400 text-xs mb-4">Neural network scanning for camera hardware...</p>
+        <a href="index.html" class="text-cyan-500 mb-6 inline-block hover:text-cyan-400">← ABORT_NEURAL_LINK</a>
+        
+        <div class="mb-6">
+            <h1 class="text-3xl font-black text-cyan-600 tracking-tighter uppercase">AI_Scanner_BETA</h1>
+            <div class="h-1 w-20 bg-cyan-600 mt-2"></div>
+        </div>
+
+        <div class="bg-cyan-950/20 border border-cyan-800/40 p-4 rounded-xl mb-6">
+            <div class="flex items-start gap-3">
+                <i class="fas fa-flask text-cyan-500 mt-1"></i>
+                <div>
+                    <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-widest">Experimental Engine</h4>
+                    <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">
+                        **NOTICE:** This module is under construction. Detections may be **unaccurate or laggy** depending on your processor power. Improving...
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <div class="video-wrapper">
-            <div id="loader" class="loading-overlay rounded-xl">
-                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-400 mb-4"></div>
-                <p class="text-sm font-mono uppercase tracking-widest">Warming up AI...</p>
+            <div id="loader" class="loader-ui rounded-xl">
+                <div class="w-12 h-12 border-4 border-cyan-900 border-t-cyan-500 rounded-full animate-spin mb-4"></div>
+                <p class="text-[10px] uppercase tracking-[0.3em] text-cyan-700">Initializing_Neural_Weights</p>
             </div>
-            
             <video id="webcam" autoplay playsinline muted></video>
             <canvas id="canvas"></canvas>
         </div>
 
-        <div id="status" class="mt-4 p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs font-mono text-cyan-500">
-            System: Initializing...
+        <div id="status" class="mt-4 p-3 bg-slate-900/50 rounded border border-slate-800 text-[10px] text-cyan-600 uppercase font-bold tracking-widest">
+            System: Offline
         </div>
     </div>
 
@@ -47,87 +63,52 @@
         const ctx = canvas.getContext('2d');
         let model = undefined;
 
-        // 1. Load the AI Model
-        async function loadModel() {
-            status.innerText = "System: Loading Neural Network...";
-            // We load the smaller/faster version of the model ('lite') to make it smoother on phones
+        async function init() {
+            status.innerText = "System: Loading COCO-SSD Network...";
             model = await cocoSsd.load({ base: 'mobilenet_v2' });
-            status.innerText = "System: AI Ready. Accessing Camera...";
-            setupCamera();
-        }
-
-        // 2. Setup the Camera
-        async function setupCamera() {
+            status.innerText = "System: Network Loaded. Requesting Optics...";
+            
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: "environment" }, // Focus on back camera
+                    video: { facingMode: "environment" },
                     audio: false
                 });
                 video.srcObject = stream;
                 video.onloadedmetadata = () => {
                     loader.style.display = "none";
-                    status.innerText = "System: Scanning for CCTV / Lenses...";
-                    predictInternal();
+                    status.innerText = "System: Active Scanning Mode Enabled";
+                    predict();
                 };
             } catch (err) {
-                status.innerText = "Camera Access Denied: " + err.message;
+                status.innerText = "CRITICAL: " + err.message;
             }
         }
 
-        // 3. Run Detection loop (With Filter)
-        async function predictInternal() {
-            // Adjust canvas to video size
+        async function predict() {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-
-            // Step 3a: Run the full COCO detection
             const predictions = await model.detect(video);
             
-            // Clear the old boxes
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Step 3b: Loop through what the AI found
-            predictions.forEach(prediction => {
+            predictions.forEach(p => {
+                // Focus on potential lens/tech hardware
+                const monitorClasses = ["cell phone", "laptop", "tv", "remote", "clock"]; 
                 
-                // ==========================================
-                //  !!! THE CAMERA-ONLY FILTER !!!
-                // ==========================================
-                // We only care about things that look like 
-                // small electronic surveillance devices.
-                const relevantClasses = ["cell phone", "laptop", "tv"]; 
-
-                if (relevantClasses.includes(prediction.class) && prediction.score > 0.40) {
+                if (monitorClasses.includes(p.class) && p.score > 0.35) {
+                    const [x, y, w, h] = p.bbox;
+                    ctx.strokeStyle = "#06b6d4";
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(x, y, w, h);
                     
-                    const [x, y, width, height] = prediction.bbox;
-                    
-                    // Box styling: cyan/teal
-                    ctx.strokeStyle = "#22d3ee";
-                    ctx.lineWidth = 4;
-                    ctx.fillStyle = "rgba(34, 211, 238, 0.1)"; // Slight overlay
-
-                    // Draw the box
-                    ctx.fillRect(x, y, width, height);
-                    ctx.strokeRect(x, y, width, height);
-
-                    // Label styling
-                    ctx.fillStyle = "#22d3ee";
-                    ctx.font = "bold 20px 'Roboto', sans-serif";
-                    
-                    // We can change the generic label to something more threatening
-                    const customLabel = "POTENTIAL_CCTV";
-
-                    ctx.fillText(
-                        `${customLabel} ${Math.round(prediction.score * 100)}%`, 
-                        x + 5, y > 25 ? y - 10 : 25
-                    );
+                    ctx.fillStyle = "#06b6d4";
+                    ctx.font = "bold 12px monospace";
+                    ctx.fillText(`[MATCH: ${Math.round(p.score * 100)}%]`, x, y - 5);
                 }
             });
-
-            // Keep the loop going
-            requestAnimationFrame(predictInternal);
+            requestAnimationFrame(predict);
         }
-
-        loadModel();
+        init();
     </script>
 </body>
 </html>
