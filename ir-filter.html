@@ -3,32 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IR Detector - CamScanner</title>
+    <title>IR Detector - GuardianLens</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         #video-container { position: relative; width: 100%; max-width: 500px; margin: auto; }
-        canvas { width: 100%; border-radius: 12px; filter: brightness(1.5) contrast(2); }
-        video { display: none; } /* Hide the raw video, we only show the filtered canvas */
+        canvas { width: 100%; border-radius: 12px; filter: brightness(1.5) contrast(2); border: 2px solid #ef4444; }
+        video { display: none; }
     </style>
 </head>
 <body class="bg-black text-white p-4">
 
     <div class="max-w-md mx-auto text-center">
-        <a href="index.html" class="text-blue-400 mb-4 inline-block">← Back to Hub</a>
-        <h1 class="text-2xl font-bold mb-2">IR Night-Vision Spotter</h1>
-        <p class="text-xs text-gray-400 mb-4">Point at a camera in a dark room. Look for bright white spots.</p>
+        <a href="index.html" class="text-red-400 mb-4 inline-block font-mono">← EXIT_SPECTRUM</a>
+        <h1 class="text-2xl font-black mb-2 tracking-tighter text-red-600 uppercase">IR Night-Vision Spotter</h1>
+        
+        <div class="bg-red-950/30 border border-red-500/50 p-3 rounded-lg mb-4 text-left">
+            <div class="flex items-center gap-2 mb-1">
+                <i class="fas fa-triangle-exclamation text-red-500 animate-pulse text-xs"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-red-400">Hardware Compatibility Alert</span>
+            </div>
+            <p class="text-[11px] text-red-200/70 leading-tight">
+                This tool only works if your device is **capable of detecting IR rays** (Back cameras with IR-cut filters may block results). For best detection, use in a **completely dark environment**.
+            </p>
+        </div>
 
         <div id="video-container">
             <video id="video" autoplay playsinline></video>
             <canvas id="canvas"></canvas>
         </div>
 
-        <div class="mt-6 p-4 bg-slate-900 rounded-lg text-sm text-left">
-            <strong>How to use:</strong>
-            <ul class="list-disc ml-5 mt-2 text-gray-300">
-                <li>Turn off the lights (IR shows best in dark).</li>
-                <li>Scan the room slowly.</li>
-                <li>If you see a <b>pulsing or steady white dot</b> that isn't visible to your naked eye, that is an IR LED.</li>
+        <div class="mt-6 p-4 bg-slate-900/50 rounded-lg text-sm text-left border border-slate-800">
+            <strong class="text-red-500 uppercase text-xs tracking-widest">Protocol:</strong>
+            <ul class="list-disc ml-5 mt-2 text-[12px] text-gray-400 space-y-1">
+                <li>Total Darkness: IR LEDs only glow when room lights are OFF.</li>
+                <li>Pulsing Dots: Look for steady white/purple glows invisible to naked eyes.</li>
+                <li>Check Front Cam: If back camera fails, try the front (selfie) camera; it usually lacks IR filters.</li>
             </ul>
         </div>
     </div>
@@ -38,11 +48,10 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-        // 1. Request Camera Access
         async function startCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "environment" }, // Use back camera
+                    video: { facingMode: "environment" },
                     audio: false 
                 });
                 video.srcObject = stream;
@@ -53,44 +62,26 @@
             }
         }
 
-        // 2. Process the Video Feed to highlight IR
         function processFrame() {
             if (video.paused || video.ended) return;
-
-            // Set canvas size to match video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-
-            // Draw current video frame to canvas
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Get image data to manipulate pixels
             let frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
             let data = frame.data;
 
-            // Loop through every pixel (R, G, B, A)
             for (let i = 0; i < data.length; i += 4) {
-                let r = data[i];
-                let g = data[i + 1];
-                let b = data[i + 2];
-
-                // "Threshold" Filter: If the pixel is very bright (like an IR LED), make it pure white.
-                // Otherwise, make it dark.
-                // Change the brightness check inside your for-loop:
-                let brightness = (r * 0.3 + g * 0.59 + b * 0.11); // Better grayscale math
-
-                // Lower this number (e.g., to 150) to make it MORE sensitive
-                if (brightness > 150) { 
-                    data[i] = 255; data[i+1] = 255; data[i+2] = 255; // Make it white
+                let r = data[i], g = data[i + 1], b = data[i + 2];
+                let brightness = (r * 0.3 + g * 0.59 + b * 0.11);
+                if (brightness > 160) { 
+                    data[i] = 255; data[i+1] = 255; data[i+2] = 255;
                 } else {
-                    data[i] = data[i+1] = data[i+2] = 0; // Everything else black
+                    data[i] = data[i+1] = data[i+2] = 0;
                 }
             }
-
             ctx.putImageData(frame, 0, 0);
             requestAnimationFrame(processFrame);
         }
-
         startCamera();
     </script>
 </body>
