@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Detector - GuardianLens</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <style>
+        .video-wrapper { position: relative; width: 100%; max-width: 640px; margin: auto; }
+        canvas { position: absolute; top: 0; left: 0; z-index: 10; width: 100%; height: 100%; }
+        video { width: 100%; border-radius: 12px; background: #1e293b; }
+        .loading-overlay { 
+            position: absolute; inset: 0; background: rgba(15, 23, 42, 0.9); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-white p-4">
+
+    <div class="max-w-md mx-auto">
+        <a href="index.html" class="text-cyan-400 mb-4 inline-block">← Back to Hub</a>
+        <h1 class="text-2xl font-bold mb-1">AI Object Scanner</h1>
+        <p class="text-slate-400 text-xs mb-4">Neural network scanning for camera hardware...</p>
+
+        <div class="video-wrapper">
+            <div id="loader" class="loading-overlay rounded-xl">
+                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-400 mb-4"></div>
+                <p class="text-sm font-mono uppercase tracking-widest">Warming up AI...</p>
+            </div>
+            
+            <video id="webcam" autoplay playsinline muted></video>
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <div id="status" class="mt-4 p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs font-mono text-cyan-500">
+            System: Initializing...
+        </div>
+    </div>
+
+   <script>
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const status = document.getElementById('status');
+        const loader = document.getElementById('loader');
+        const ctx = canvas.getContext('2d');
+        let model = undefined;
+
+        // 1. Load the AI Model
+        async function loadModel() {
+            status.innerText = "System: Loading Neural Network...";
+            // We load the smaller/faster version of the model ('lite') to make it smoother on phones
+            model = await cocoSsd.load({ base: 'mobilenet_v2' });
+            status.innerText = "System: AI Ready. Accessing Camera...";
+            setupCamera();
+        }
+
+        // 2. Setup the Camera
+        async function setupCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment" }, // Focus on back camera
+                    audio: false
+                });
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    loader.style.display = "none";
+                    status.innerText = "System: Scanning for CCTV / Lenses...";
+                    predictInternal();
+                };
+            } catch (err) {
+                status.innerText = "Camera Access Denied: " + err.message;
+            }
+        }
+
+        // 3. Run Detection loop (With Filter)
+        async function predictInternal() {
+            // Adjust canvas to video size
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Step 3a: Run the full COCO detection
+            const predictions = await model.detect(video);
+            
+            // Clear the old boxes
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Step 3b: Loop through what the AI found
+            predictions.forEach(prediction => {
+                
+                // ==========================================
+                //  !!! THE CAMERA-ONLY FILTER !!!
+                // ==========================================
+                // We only care about things that look like 
+                // small electronic surveillance devices.
+                const relevantClasses = ["cell phone", "laptop", "tv"]; 
+
+                if (relevantClasses.includes(prediction.class) && prediction.score > 0.40) {
+                    
+                    const [x, y, width, height] = prediction.bbox;
+                    
+                    // Box styling: cyan/teal
+                    ctx.strokeStyle = "#22d3ee";
+                    ctx.lineWidth = 4;
+                    ctx.fillStyle = "rgba(34, 211, 238, 0.1)"; // Slight overlay
+
+                    // Draw the box
+                    ctx.fillRect(x, y, width, height);
+                    ctx.strokeRect(x, y, width, height);
+
+                    // Label styling
+                    ctx.fillStyle = "#22d3ee";
+                    ctx.font = "bold 20px 'Roboto', sans-serif";
+                    
+                    // We can change the generic label to something more threatening
+                    const customLabel = "POTENTIAL_CCTV";
+
+                    ctx.fillText(
+                        `${customLabel} ${Math.round(prediction.score * 100)}%`, 
+                        x + 5, y > 25 ? y - 10 : 25
+                    );
+                }
+            });
+
+            // Keep the loop going
+            requestAnimationFrame(predictInternal);
+        }
+
+        loadModel();
+    </script>
+</body>
+</html>

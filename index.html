@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuardianLens | AI CCTV Detector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        /* Modern Background Animation */
+        body {
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scanning Line Effect */
+        .scan-line {
+            width: 100%;
+            height: 2px;
+            background: rgba(34, 211, 238, 0.5);
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 15px #22d3ee;
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            border-color: #22d3ee;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+        }
+    </style>
+</head>
+<body class="text-slate-200">
+
+    <div class="scan-line pointer-events-none"></div>
+
+    <div class="relative z-10 p-6 max-w-md mx-auto">
+        <header class="mt-10 mb-12 text-center">
+            <div class="inline-block p-3 rounded-full bg-cyan-500/10 mb-4 border border-cyan-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+            </div>
+            <h1 class="text-4xl font-extrabold tracking-tight text-white mb-2">Guardian<span class="text-cyan-400">Lens</span></h1>
+            <p class="text-slate-400 text-sm">Advanced Security Detection Suite</p>
+        </header>
+
+        <div class="grid gap-6">
+            
+            <a href="ai-detect.html" class="glass card-hover block p-5 rounded-2xl transition-all duration-300 group">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="p-2 rounded-lg bg-cyan-500/20 text-cyan-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-500 bg-cyan-500/10 px-2 py-1 rounded">Visual AI</span>
+                </div>
+                <h2 class="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">AI Object Detector</h2>
+                <p class="text-slate-400 text-sm mt-1">Real-time shape recognition for hidden lenses and dome cameras.</p>
+            </a>
+
+            <a href="ir-filter.html" class="glass card-hover block p-5 rounded-2xl transition-all duration-300 group">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="p-2 rounded-lg bg-purple-500/20 text-purple-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-purple-500 bg-purple-500/10 px-2 py-1 rounded">Night Vision</span>
+                </div>
+                <h2 class="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">Infrared Spotter</h2>
+                <p class="text-slate-400 text-sm mt-1">Exposes invisible night-vision LEDs in low-light environments.</p>
+            </a>
+
+            <a href="network-guide.html" class="glass card-hover block p-5 rounded-2xl transition-all duration-300 group">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M2.929 6.515a15 15 0 0121.213 0" /></svg>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">Network</span>
+                </div>
+                <h2 class="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Digital Audit</h2>
+                <p class="text-slate-400 text-sm mt-1">Scan Wi-Fi signals for unauthorized IP camera transmissions.</p>
+            </a>
+
+        </div>
+
+        <footer class="mt-12 text-center">
+            <p class="text-[10px] text-slate-500 tracking-widest uppercase italic">Secure • Private • Local Processing</p>
+        </footer>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Audit - GuardianLens</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #020617; color: #f8fafc; }
+        .terminal-box { 
+            background: rgba(16, 185, 129, 0.05); 
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-family: monospace;
+        }
+        .pulse-emerald { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="max-w-md mx-auto">
+        <a href="index.html" class="text-emerald-400 mb-6 inline-block font-mono">← RETURN_TO_HUB</a>
+        
+        <div class="mb-8">
+            <h1 class="text-3xl font-black text-emerald-500 tracking-tighter">NETWORK_AUDIT</h1>
+            <div class="h-1 w-20 bg-emerald-500 mt-2"></div>
+        </div>
+
+        <div class="terminal-box p-4 rounded-lg mb-6 relative overflow-hidden">
+            <div class="flex items-center space-x-2 mb-3">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 pulse-emerald"></div>
+                <span class="text-xs text-emerald-400 uppercase tracking-widest">Signal Intercept Active</span>
+            </div>
+            <p class="text-[10px] text-emerald-700 leading-tight">
+                SCANNING_PORT: 80, 554, 1935, 8080...<br>
+                CHECKING_MAC_VENDORS...<br>
+                HANDSHAKE_PROTOCOL_INITIATED...
+            </p>
+        </div>
+
+        <h3 class="text-sm font-bold text-white mb-4 uppercase tracking-widest border-b border-slate-800 pb-2">Step-by-Step Protocol</h3>
+
+        <div class="space-y-6">
+            <div class="flex gap-4">
+                <span class="text-emerald-500 font-bold">01</span>
+                <div>
+                    <p class="text-sm font-bold">Access Gateway</p>
+                    <p class="text-xs text-slate-400">Connect to the local Wi-Fi. Most spy cams require a 2.4GHz or 5GHz connection to stream data.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <span class="text-emerald-500 font-bold">02</span>
+                <div>
+                    <p class="text-sm font-bold">Identify Suspicious Nodes</p>
+                    <p class="text-xs text-slate-400">Open your phone's Wi-Fi settings. Look for weird names like <code class="bg-slate-800 px-1 text-emerald-300">IPC-XXXX</code>, <code class="bg-slate-800 px-1 text-emerald-300">CAM-612</code>, or just long strings of random numbers.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <span class="text-emerald-500 font-bold">03</span>
+                <div>
+                    <p class="text-sm font-bold">Hardware Correlation</p>
+                    <p class="text-xs text-slate-400">If you see a strong Wi-Fi signal named "Cam" but can't see a camera, it's likely hidden inside an appliance (clock, USB charger, etc.).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-10 p-4 border border-dashed border-slate-700 rounded-lg text-center">
+            <p class="text-[10px] text-slate-500 uppercase">Expert Tip</p>
+            <p class="text-xs text-slate-300 mt-1">Download "Fing" from the App Store for a deep network scan that a web app can't perform.</p>
+        </div>
+    </div>
+
+</body>
+</html>
